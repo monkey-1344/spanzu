@@ -1,0 +1,312 @@
+```html
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joc de Ghicire</title>
+  <style>
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: #003366; /* University blue */
+      border-bottom: 2px solid #FFD700; /* Gold border */
+    }
+
+    .navbar-logo {
+      height: 80px;
+      object-fit: contain;
+    }
+
+    .content {
+      margin-top: 20px;
+      color: #FFFFFF; /* White text */
+    }
+
+    .question {
+      font-size: 45px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #FFD700; /* Gold text */
+    }
+
+    .alphabet {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      margin: 20px auto;
+      max-width: 600px;
+    }
+
+    #help-button {
+      display: block;
+      margin: 20px auto;
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #003366; /* Blue text */
+      background-color: #FFD700; /* Gold background */
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #help-button:hover {
+      background-color: #FFC107; /* Lighter gold */
+    }
+
+    .letter-box {
+      display: inline-block;
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #FFD700; /* Gold border */
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      background-color: #003366; /* Blue background */
+      color: #FFFFFF; /* White text */
+      transition: background-color 0.3s;
+    }
+
+    .letter-box:hover {
+      background-color: #00509E; /* Lighter blue */
+    }
+
+    .letter-box.disabled {
+      background-color: #CCCCCC; /* Gray for disabled */
+      pointer-events: none;
+    }
+
+    .answer {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px auto;
+      letter-spacing: 5px;
+      white-space: pre;
+      color: #FFFFFF; /* White text */
+    }
+
+    .navigation {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+    }
+
+    .nav-button {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #FFD700; /* Gold border */
+      cursor: pointer;
+      background-color: #003366; /* Blue background */
+      color: #FFFFFF; /* White text */
+      border-radius: 5px;
+    }
+
+    .score-timer {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      text-align: right;
+      font-size: 20px;
+      font-weight: bold;
+      background-color: rgba(0, 51, 102, 0.8); /* Semi-transparent blue */
+      color: #FFFFFF; /* White text */
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #game-timer, #total-score, #question-score {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="navbar">
+  <img src="photos/sigla-standard-RGB-Photoroom.png" alt="Sigla" class="navbar-logo">
+  <img src="photos/logo-asus.png" alt="Logo ASUS" class="navbar-logo">
+</div>
+<div class="content">
+  <div class="question" id="question"></div>
+  <div class="answer" id="answer"></div>
+  <div class="alphabet" id="alphabet"></div>
+  <button id="help-button" onclick="revealRandomLetter()">Ajutor</button>
+  <div class="navigation">
+    <button class="nav-button" onclick="prevQuestion()">⬅️ Înapoi</button>
+    <button class="nav-button" onclick="nextQuestion()">➡️ Înainte</button>
+  </div>
+  <div class="score-timer">
+    <div id="total-score">Scor total: 0</div>
+    <div id="question-score">Scor întrebare: 500</div>
+    <div id="game-timer">Timp joc: 120</div>
+  </div>
+</div>
+<script>
+  const questions = [
+    ["Care este capitala României?", "București"],
+    ["Ce culoare are cerul?", "Albastru"],
+    ["Câte zile are o săptămână?", "Șapte"]
+  ];
+
+  let currentQuestionIndex = 0;
+  let totalScore = 0;
+  let questionScore = 500;
+  let gameTimerInterval;
+  let gameTimeRemaining = 120;
+
+  function renderQuestion() {
+    questionScore = 500;
+    updateScores();
+
+    document.getElementById("help-button").disabled = false;
+
+    const question = questions[currentQuestionIndex][0];
+    const answer = questions[currentQuestionIndex][1];
+    const answerDiv = document.getElementById("answer");
+    const alphabetDiv = document.getElementById("alphabet");
+
+    document.getElementById("question").textContent = `Întrebare: ${question}`;
+    answerDiv.textContent = "";
+    for (let i = 0; i < answer.length; i++) {
+      answerDiv.textContent += answer[i] === " " ? " " : "_ ";
+    }
+
+    alphabetDiv.innerHTML = "";
+    const alphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ";
+    for (const letter of alphabet) {
+      const letterBox = document.createElement("div");
+      letterBox.className = "letter-box";
+      letterBox.textContent = letter;
+      letterBox.onclick = () => requestLetter(letter);
+      alphabetDiv.appendChild(letterBox);
+    }
+  }
+
+  function startGameTimer() {
+    gameTimerInterval = setInterval(() => {
+      gameTimeRemaining--;
+      document.getElementById("game-timer").textContent = formatTime(gameTimeRemaining);
+      if (gameTimeRemaining <= 0) {
+        clearInterval(gameTimerInterval);
+        alert(`Joc terminat! Scor final: ${totalScore}`);
+      }
+    }, 1000);
+  }
+
+  function revealRandomLetter() {
+    if (questionScore <= 0) {
+      document.getElementById("help-button").disabled = true;
+      return;
+    }
+
+    const answer = questions[currentQuestionIndex][1].toUpperCase();
+    const answerDiv = document.getElementById("answer");
+    const currentAnswer = answerDiv.textContent.replace(/\s/g, "");
+    const unguessedLetters = [];
+
+    for (let i = 0; i < answer.length; i++) {
+      if (answer[i] !== " " && currentAnswer[i] === "_") {
+        unguessedLetters.push(answer[i]);
+      }
+    }
+
+    if (unguessedLetters.length > 0) {
+      const randomLetter = unguessedLetters[Math.floor(Math.random() * unguessedLetters.length)];
+      checkLetter(randomLetter);
+      questionScore -= 100;
+      updateScores();
+    } else {
+      alert("Nu mai sunt litere de ghicit!");
+    }
+  }
+
+  function requestLetter(letter) {
+    const letterBoxes = document.querySelectorAll(".letter-box");
+    letterBoxes.forEach(box => {
+      if (box.textContent === letter) {
+        box.classList.add("disabled");
+        box.onclick = null;
+      }
+    });
+
+    checkLetter(letter);
+  }
+
+  function checkLetter(letter) {
+    const answer = questions[currentQuestionIndex][1].toUpperCase();
+    const answerDiv = document.getElementById("answer");
+    const currentAnswer = answerDiv.textContent.replace(/\s/g, "");
+    let updatedAnswer = "";
+
+    for (let i = 0; i < answer.length; i++) {
+      if (answer[i].toUpperCase() === letter) {
+        updatedAnswer += answer[i];
+      } else if (currentAnswer[i] !== "_") {
+        updatedAnswer += currentAnswer[i];
+      } else {
+        updatedAnswer += "_";
+      }
+    }
+
+    answerDiv.textContent = updatedAnswer.split("").join(" ");
+
+    if (!updatedAnswer.includes("_")) {
+      totalScore += questionScore;
+      updateScores();
+      alert("Felicitări! Ai ghicit răspunsul corect!");
+      nextQuestion();
+    }
+  }
+
+  function updateScores() {
+    document.getElementById("total-score").textContent = `Scor total: ${totalScore}`;
+    document.getElementById("question-score").textContent = `Scor întrebare: ${questionScore}`;
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+      currentQuestionIndex++;
+      renderQuestion();
+    } else {
+      alert("Nu mai sunt întrebări! Joc terminat.");
+      clearInterval(gameTimerInterval);
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderQuestion();
+    }
+  }
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  }
+
+  document.addEventListener("keydown", (event) => {
+    const letter = event.key.toUpperCase();
+    const alphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ";
+    if (alphabet.includes(letter)) {
+      requestLetter(letter);
+    }
+  });
+
+  document.getElementById("game-timer").textContent = formatTime(gameTimeRemaining);
+  startGameTimer();
+  renderQuestion();
+</script>
+</body>
+</html>
+```
