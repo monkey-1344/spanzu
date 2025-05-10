@@ -1,8 +1,10 @@
 <?php
-// Question and answer
-$question = "Care este capitala României?";
-$answer = "București"; // The correct answer
-$answerLength = mb_strlen($answer); // Length of the answer
+// Questions and answers
+$questions = [
+    ["Care este capitala României?", "București"],
+    ["Ce culoare are cerul?", "Albastru"],
+    ["Câte zile are o săptămână?", "Șapte"]
+];
 ?>
 
 <!DOCTYPE html>
@@ -34,41 +36,66 @@ $answerLength = mb_strlen($answer); // Length of the answer
             font-size: 20px;
             margin-bottom: 20px;
         }
+        .navigation {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+        }
+        .nav-button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #000;
+            cursor: pointer;
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
-<div class="question">
-    <strong>Întrebare:</strong> <?php echo $question; ?>
-</div>
-<div class="answer" id="answer">
-    <?php
-    // Display underscores for each letter in the answer
-    for ($i = 0; $i < $answerLength; $i++) {
-        $char = mb_substr($answer, $i, 1);
-        echo $char === " " ? " " : "_ ";
-    }
-    ?>
-</div>
-<div class="alphabet">
-    <?php
-    // Romanian alphabet
-    $alphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ";
-    $letters = preg_split('//u', $alphabet, -1, PREG_SPLIT_NO_EMPTY);
-    foreach ($letters as $letter) {
-        echo "<div class='letter-box' onclick='checkLetter(\"$letter\")'>$letter</div>";
-    }
-    ?>
+<div class="question" id="question"></div>
+<div class="answer" id="answer"></div>
+<div class="alphabet" id="alphabet"></div>
+<div class="navigation">
+    <button class="nav-button" onclick="prevQuestion()">⬅️ Înapoi</button>
+    <button class="nav-button" onclick="nextQuestion()">➡️ Înainte</button>
 </div>
 
 <script>
-    const answer = "<?php echo $answer; ?>";
-    const answerDiv = document.getElementById("answer");
+    const questions = <?php echo json_encode($questions); ?>;
+    let currentQuestionIndex = 0;
+
+    function renderQuestion() {
+        const question = questions[currentQuestionIndex][0];
+        const answer = questions[currentQuestionIndex][1];
+        const answerDiv = document.getElementById("answer");
+        const alphabetDiv = document.getElementById("alphabet");
+
+        // Update question
+        document.getElementById("question").textContent = `Întrebare: ${question}`;
+
+        // Display underscores for the answer
+        answerDiv.textContent = "";
+        for (let i = 0; i < answer.length; i++) {
+            answerDiv.textContent += answer[i] === " " ? " " : "_";
+        }
+
+        // Display alphabet
+        alphabetDiv.innerHTML = "";
+        const alphabet = "AĂÂBCDEFGHIÎJKLMNOPQRSȘTȚUVWXYZ";
+        for (const letter of alphabet) {
+            const letterBox = document.createElement("div");
+            letterBox.className = "letter-box";
+            letterBox.textContent = letter;
+            letterBox.onclick = () => checkLetter(letter);
+            alphabetDiv.appendChild(letterBox);
+        }
+    }
 
     function checkLetter(letter) {
+        const answer = questions[currentQuestionIndex][1];
+        const answerDiv = document.getElementById("answer");
         let updatedAnswer = "";
         let found = false;
 
-        // Check if the letter exists in the answer
         for (let i = 0; i < answer.length; i++) {
             const currentChar = answer[i];
             if (currentChar.toUpperCase() === letter) {
@@ -81,10 +108,8 @@ $answerLength = mb_strlen($answer); // Length of the answer
             }
         }
 
-        // Update the answer display
         answerDiv.textContent = updatedAnswer;
 
-        // Disable the clicked letter
         const letterBoxes = document.querySelectorAll(".letter-box");
         letterBoxes.forEach(box => {
             if (box.textContent === letter) {
@@ -92,11 +117,27 @@ $answerLength = mb_strlen($answer); // Length of the answer
             }
         });
 
-        // Check if the game is won
         if (!updatedAnswer.includes("_")) {
             alert("Felicitări! Ai ghicit răspunsul corect!");
         }
     }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            renderQuestion();
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+    }
+
+    // Initialize the first question
+    renderQuestion();
 </script>
 </body>
 </html>
