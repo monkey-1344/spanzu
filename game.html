@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Joc de Ghicire</title>
     <style>
         body {
@@ -134,8 +133,8 @@
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-
         }
+
         #game-timer, #total-score, #question-score {
             margin: 5px 0;
         }
@@ -175,7 +174,7 @@
     let totalScore = 0;
     let questionScore = 500;
     let gameTimerInterval;
-    let gameTimeRemaining = 20;
+    let gameTimeRemaining = 120;
 
     function renderQuestion() {
         questionScore = 500;
@@ -236,6 +235,17 @@
         if (unguessedLetters.length > 0) {
             const randomLetter = unguessedLetters[Math.floor(Math.random() * unguessedLetters.length)];
             checkLetter(randomLetter);
+
+            // Update the corresponding letter box in the alphabet
+            const letterBoxes = document.querySelectorAll(".letter-box");
+            letterBoxes.forEach(box => {
+                if (box.textContent === randomLetter) {
+                    box.style.backgroundColor = "#d4edda"; // Light green for correct
+                    box.classList.add("disabled");
+                    box.onclick = null;
+                }
+            });
+
             questionScore -= 100;
             updateScores();
         } else {
@@ -245,13 +255,21 @@
 
     function requestLetter(letter) {
         const letterBoxes = document.querySelectorAll(".letter-box");
+        const answer = questions[currentQuestionIndex][1].toUpperCase();
+
         letterBoxes.forEach(box => {
             if (box.textContent === letter) {
+                if (answer.includes(letter)) {
+                    box.style.backgroundColor = "#d4edda"; // Light green for correct
+                } else {
+                    box.style.backgroundColor = "#f8d7da"; // Light red for incorrect
+                }
                 box.classList.add("disabled");
                 box.onclick = null;
             }
         });
 
+        // Update the answer display
         checkLetter(letter);
     }
 
@@ -260,10 +278,12 @@
         const answerDiv = document.getElementById("answer");
         const currentAnswer = answerDiv.textContent.replace(/\s/g, "");
         let updatedAnswer = "";
+        let isCorrect = false;
 
         for (let i = 0; i < answer.length; i++) {
             if (answer[i].toUpperCase() === letter) {
                 updatedAnswer += answer[i];
+                isCorrect = true;
             } else if (currentAnswer[i] !== "_") {
                 updatedAnswer += currentAnswer[i];
             } else {
@@ -272,13 +292,13 @@
         }
 
         answerDiv.textContent = updatedAnswer.split("").join(" ");
-
         if (!updatedAnswer.includes("_")) {
             totalScore += questionScore;
             updateScores();
             alert("Felicitări! Ai ghicit răspunsul corect!");
             nextQuestion();
         }
+        return isCorrect;
     }
 
     function updateScores() {
@@ -304,9 +324,10 @@
             renderQuestion();
         }
     }
+
     function newGame() {
         let lastQuestionIndex = parseInt(localStorage.getItem("lastQuestionIndex")) || 0;
-        let nextQuestionIndex = (lastQuestionIndex + 1) % questions.length; // Move to the next question, wrap around if needed
+        let nextQuestionIndex = (lastQuestionIndex + 1) % questions.length;
         localStorage.setItem("lastQuestionIndex", nextQuestionIndex);
         window.location.href = "index.html";
     }
