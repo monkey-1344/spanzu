@@ -165,16 +165,47 @@
 
 <script>
     const questions = [
-        ["Care este capitala României?", "București"],
-        ["Ce culoare are cerul?", "Albastru"],
-        ["Câte zile are o săptămână?", "Șapte"]
+        ["Cu ce îți notezi ideile la curs?", "Pix"],
+        ["Ce tip de examen se dă în fața uni profesor?", "Oral"],
+        ["Cum se numește lucrarea finală de master?", "Disertație"],
+        ["Ce dispozitiv folosești pentru cursuri online?", "Laptop"],
+        ["Cum se numește o zi fără cursuri?", "Liberă"],
+        ["Ce faci când nu mai poți învăța?", "Pauză"],
+        ["Ce înveți pentru un test?", "Materia"],
+        ["Ce folosești ca să înveți rapid?", "Rezumat"],
+        ["Ce tip de cazare e mai ieftină pentru studenți?", "Cămin"],
+        ["Ce mănânci des din lipsă de bani?", "Pate"],
+        ["Ce eveniment universitar are loc anual?", "ZNST"],
+        ["Ce document atestă calitatea de student?", "Carnet"],
+        ["Cum se numește perioada cu examene de toamnă?", "Restanțe"],
+        ["Cum se numește un coleg care te ajută la test?", "Salvator"],
+        ["Ce aparat folosești pentru prezentări?", "Proiector"],
+        ["Cum se numește platforma cu toate notele?", "Școlaritate"],
+        ["Ce fac studenții des în pauză?", "Fumează"],
+        ["Ce sărbătoresc studenții după sesiune?", "Libertate"],
+        ["Ce program folosești pentru calcule?", "Excel"],
+        ["Ce faci când nu înțelegi materia?", "Întrebi"],
+        ["Ce statut ai în primul an de facultate?", "Boboc"],
+        ["Ce faci în timpul unui colocviu?", "Scrii"],
+        ["Cum se numește perioada de dinaintea sesiunii?", "Stres"],
+        ["Ce mijloc de transport folosesc mulți studenți?", "TPL"],
+        ["Cum se numește perioada de evaluare finală?", "Examene"],
+        ["Ce primești dacă ai media mare?", "Bursă"],
+        ["Ce lipsește frecvent în sesiune?", "Timp"],
+        ["Ce program folosești pentru cod?", "Python"],
+        ["Ce se cere la admitere?", "Dosar"],
+        ["Cum se numește profesorul coordonator?", "Îndrumător"],
+        ["Ce simți în sesiune?", "Panică"],
+        ["Ce faci când iei nota mică?", "Plângi"],
+        ["Cum se numește programul de schimb internațional?", "Erasmus"],
+        ["Ce document soliciți pentru reducere?", "Adeverință"]
     ];
 
     let currentQuestionIndex = parseInt(localStorage.getItem("lastQuestionIndex")) || 0;
     let totalScore = 0;
     let questionScore = 500;
     let gameTimerInterval;
-    let gameTimeRemaining = 120;
+    let gameTimeRemaining = 720;
 
     function renderQuestion() {
         questionScore = 500;
