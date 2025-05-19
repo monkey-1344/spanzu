@@ -166,7 +166,7 @@
 <script>
     const questions = [
         ["Cu ce îți notezi ideile la curs?", "Pix"],
-        ["Ce tip de examen se dă în fața uni profesor?", "Oral"],
+        ["Ce tip de examen se dă în fața unui profesor?", "Oral"],
         ["Cum se numește lucrarea finală de master?", "Disertație"],
         ["Ce dispozitiv folosești pentru cursuri online?", "Laptop"],
         ["Cum se numește o zi fără cursuri?", "Liberă"],
@@ -188,17 +188,83 @@
         ["Ce statut ai în primul an de facultate?", "Boboc"],
         ["Ce faci în timpul unui colocviu?", "Scrii"],
         ["Cum se numește perioada de dinaintea sesiunii?", "Stres"],
-        ["Ce mijloc de transport folosesc mulți studenți?", "TPL"],
+        ["Ce mijloc de transport folosesc mulți studenți?", "TPL-ul"],
         ["Cum se numește perioada de evaluare finală?", "Examene"],
         ["Ce primești dacă ai media mare?", "Bursă"],
         ["Ce lipsește frecvent în sesiune?", "Timp"],
-        ["Ce program folosești pentru cod?", "Python"],
+        ["Ce program folosești pentru cod?", "Java"],
         ["Ce se cere la admitere?", "Dosar"],
         ["Cum se numește profesorul coordonator?", "Îndrumător"],
         ["Ce simți în sesiune?", "Panică"],
         ["Ce faci când iei nota mică?", "Plângi"],
         ["Cum se numește programul de schimb internațional?", "Erasmus"],
-        ["Ce document soliciți pentru reducere?", "Adeverință"]
+        ["Ce document soliciți pentru reducere?", "Adeverință"],
+        ["Cel mai lung fluviu din Africa", "Nil"],
+        ["Ce comanzi de obicei de la cantina?", "Ciorbă"],
+        ["Ce tip de examen e scris pe hârtie?", "Grilă"],
+        ["Ce faci când ești în urmă cu materia?", "Recuperezi"],
+        ["Moneda oficială a Japoniei", "Yen"],
+        ["Ce ai nevoie pentru un eseu?", "Inspirație"],
+        ["Ce zi e populară pentru examene?", "Luni"],
+        ["Ce faci când ai prea multe teme?", "Amâni"],
+        ["Organ care pompează sângele?", "Inima"],
+        ["Se formează iarna pe lacuri", "Gheață"],
+        ["Ce aparat mai poți folosi pentru notițe?", "Tabletă"],
+        ["Se scurge de pe munte", "Râu"],
+        ["Cum se numește practica obligatorie?", "Stagiu"],
+        ["Ce apare după semestrul doi?", "Vară"],
+        ["Ce document finalizează studiile?", "Diplomă"],
+        ["Obiect de gătit adânc", "Oală"],
+        ["Ce pregătești pentru un interviu?", "CV"],
+        ["Cursul de la ora… are mulți absenți.", "Opt"],
+        ["Gaz vital pentru sănătate", "Oxigen"],
+        ["Ce metodă de evaluare e rapidă?", "Test"],
+        ["Cum se numește un examen ratat?", "Restanță"],
+        ["Unde stau studenții în timpul facultății dacă nu la cămin?", "Chirie"],
+        ["Cum se numește mâncarea ieftină a studentului?", "Pâine"],
+        ["Instrument simplu de curățat podeaua", "Mop"],
+        ["Ce program de scris folosești la referate?", "Word"],
+        ["Ce băutură consumă des studenții la petreceri?", "Bere"],
+        ["Cum se numește testul din timpul semestrului?", "Colocviu"],
+        ["Ce faci când nu înveți și speri să treci?", "Copiezi"],
+        ["Obiect care îți arată ora", "Ceas"],
+        ["Ce zi a săptămânii este preferată pentru petreceri?", "Joi"],
+        ["Ce faci toată noaptea înainte de examen?", "Învăț"],
+        ["Ce înseamnă când iei 10 la un examen?", "Succes"],
+        ["Relief stâncos ce depășește înălțimea de 800 m se numește…", "Munți"],
+        ["Cum se numește pauza dintre semestre?", "Vacanță"],
+        ["Ce eveniment se organizează la început de an universitar?", "Deschiderea"],
+        ["Ce mănânci rapid între cursuri?", "Sandviș"],
+        ["Zonă deșertică din nordul Africii", "Sahara"],
+        ["Cum se numește ultima lucrare de absolvire?", "Licență"],
+        ["Unde se întâlnesc studenții?", "Book"],
+        ["La cine apelezi când colegul/colega deșteaptă nu știe?", "Secretariat"],
+        ["Care este cea mai mare celulă din corpul uman?", "Ovul"],
+        ["Care e scuza folosita de majoritatea studenților?", "Muncesc"],
+        ["Care e cea mai proastă variant pentru a-ți face licența?", "Mită"],
+        ["Unde face toată lumea sex?", "Cămin"],
+        ["Care este cel mai greu organ?", "Ficatul"],
+        ["Ce nu are niciun student la el/ea când e nevoie?", "Pix"],
+        ["Care sunt observațiile din afara orelor?", "Bârfă"],
+        ["Cafeau niciodată nu se bea….", "Singură"],
+        ["Dacă nu bem bere,bem…?", "Vodka"],
+        ["Țesut responsabil cu impulsuri nervoase", "Nervos"],
+        ["Ce are 2 craci si 3 găuri?", "Pantalonii"],
+        ["Fruct tropical galben", "Ananas"],
+        ["Poet Național român", "Eminovici"],
+        ["ROGVAIV", "Curcubeu"],
+        ["Mama ta e…", "Biolog"],
+        ["Ce continuă să crească după ce mori ?", "Unghiile"],
+        ["Ce e în aer și poate transporta oameni", "Racheta"],
+        ["Într-o psihiatrie găsim numai…", "Pacienți"],
+        ["Competiție sportive internațională", "Olimpiadă"],
+        ["Al doilea Război Global îl are la bază pe cel …", "Mondial"],
+        ["Cel mai lung os al corpului uman", "Femurul"],
+        ["Care este figura geometrică atribuită relațiilor romantic?", "Triunghi"],
+        ["Un act sexual neprotejat înseamnă lipsa…", "Prezervativului"],
+        ["În tinerețe era virginitatea,la bătrânețe e…", "Viagra"],
+        ["De ce ai parte atunci când ești copil și se limitează atunci când ești adult?", "Inocența"]
+
     ];
 
     let currentQuestionIndex = parseInt(localStorage.getItem("lastQuestionIndex")) || 0;
@@ -208,13 +274,16 @@
     let gameTimeRemaining = 720;
 
     function renderQuestion() {
-        questionScore = 500;
+        const question = questions[currentQuestionIndex][0];
+        const answer = questions[currentQuestionIndex][1];
+
+        const uniqueLetters = new Set(answer.replace(/[^A-ZĂÂÎȘȚ]/gi, '').toUpperCase());
+        questionScore = uniqueLetters.size * 100;
         updateScores();
 
         document.getElementById("help-button").disabled = false;
 
-        const question = questions[currentQuestionIndex][0];
-        const answer = questions[currentQuestionIndex][1];
+
         const answerDiv = document.getElementById("answer");
         const alphabetDiv = document.getElementById("alphabet");
 
